@@ -1,21 +1,27 @@
 
 #include "Storage.h"
-#define FileName "DataNotes.txt"
 
 
 int storeNotes(List* list) {
     FILE* file = NULL;
     Node* currentNode = NULL;
-    if (list == NULL) { return 1; }
-    file = fopen(FileName, "w");
+    if (list == NULL) { return ERROR; }
+    file = fopen(FILENAME, "w");
+    if (file == NULL) { return ERROR; }
     currentNode = list->head;
     while (currentNode != NULL) {
-        if (fputs(currentNode->data, file) <= 0) { return 1; }
-        if (fputc('\n', file) == -1) { return 1; }
+        if (fputs(currentNode->data, file) <= 0) {
+            fclose(file);
+            return ERROR;
+        }
+        if (fputc('\n', file) == EOF) {
+            fclose(file);
+            return ERROR;
+        }
         currentNode = currentNode->next;
     }
     fclose(file);
-    return 0;
+    return SUCCESS;
 }
 
 int retrieveNotes(List* list) {
@@ -25,13 +31,16 @@ int retrieveNotes(List* list) {
     Node* node = NULL;
     char character;
     int count;
-    if (list == NULL) { return 1; }
-    file = fopen(FileName, "r");
-    if (file == NULL) { return 1; }
+    if (list == NULL) { return ERROR; }
+    file = fopen(FILENAME, "r");
+    if (file == NULL) { return ERROR; }
     buffer = malloc(sizeof(char));
-    if (buffer == NULL) { return 1; }
+    if (buffer == NULL) {
+        fclose(file);
+        return ERROR;
+    }
     count = 0;
-    while ((character = fgetc(file)) != -1) {
+    while ((character = fgetc(file)) != EOF) {
         if (character != '\n') {
             buffer[count] = character;
             count++;
@@ -39,7 +48,7 @@ int retrieveNotes(List* list) {
             if (bridge == NULL) {
                 free(buffer);
                 fclose(file);
-                return 1;
+                return ERROR;
             }
             buffer = bridge;
         }
@@ -49,21 +58,21 @@ int retrieveNotes(List* list) {
             if (node == NULL) {
                 free(buffer);
                 fclose(file);
-                return 1;
+                return ERROR;
             }
-            if (listInsert(list, node) == 1) {
+            if (listInsert(list, node) == ERROR) {
                 free(buffer);
                 free(node);
                 fclose(file);
-                return 1;
+                return ERROR;
             }
             buffer = malloc(sizeof(char));
             if (buffer == NULL) {
                 fclose(file);
-                return 1;
+                return ERROR;
             }
             count = 0;
         }
     }
-    return 0;
+    return SUCCESS;
 }

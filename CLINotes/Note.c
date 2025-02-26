@@ -3,14 +3,14 @@
 #include "List.h"
 
 
-void noteAdd(List* list) {
+int noteAdd(List* list) {
     char* buffer = NULL;
     char* bridge = NULL;
     char character;
     int count;
-    if (list == NULL) { return; }
+    if (list == NULL) { return ERROR; }
     buffer = malloc(sizeof(char));
-    if (buffer == NULL) { return; }
+    if (buffer == NULL) { return ERROR; }
     count = 0;
     printf("Enter your note: ");
     getchar();
@@ -20,28 +20,29 @@ void noteAdd(List* list) {
         bridge = realloc(buffer, sizeof(char)* count);
         if (bridge == NULL) {
             free(buffer);
-            return;
+            return ERROR;
         }
         buffer = bridge;
     }
     buffer[count] = '\0';
-    if (listInsert(list, nodeCreate(buffer)) != 0) {
+    if (listInsert(list, nodeCreate(buffer)) != SUCCESS) {
         printf("Failed to add note\n");
         free(buffer);
-        return;
+        return ERROR;
     }
     printf("Note added successfully!\n");
+    return SUCCESS;
 }
 
 int notesView(List* list) {
     Node* currentNode = NULL;
     int count;
     if (list == NULL) {
-        return 1;
+        return ERROR;
     }
     if (list->head == NULL) {
         printf("No notes yet!\n");
-        return 1;
+        return ERROR;
     }
     printf("\n=== Notes ===\n\n");
     currentNode = list->head;
@@ -52,13 +53,13 @@ int notesView(List* list) {
         currentNode = currentNode->next;
     }
     printf("\n=== Notes ===\n");
-    return 0;
+    return SUCCESS;
 }
 
 int noteRemove(List* list) {
     int selector;
-    if (list == NULL) { return 1; }
-    if (notesView(list) != 0) { return 1; }
+    if (list == NULL) { return ERROR; }
+    if (notesView(list) != SUCCESS) { return ERROR; }
     printf("Note to remove, Nr: ");
     while (1) {
         if (scanf("%d", &selector) == 1) { break; }
@@ -67,8 +68,8 @@ int noteRemove(List* list) {
     selector = (selector == 0 ? 0 : selector - 1);
     if (listRemove(list, selector) != 0) {
         printf("Something went wrong\n");
-        return 1;
+        return ERROR;
     }
     printf("Note removed successfully!\n");
-    return 0;
+    return SUCCESS;
 }

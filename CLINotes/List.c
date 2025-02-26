@@ -14,11 +14,11 @@ Node* nodeCreate(char* data) {
 
 int nodeDestroy(Node* node) {
     if (node == NULL) {
-        return 1;
+        return ERROR;
     }
     free(node->data);
     free(node);
-    return 0;
+    return SUCCESS;
 }
 
 
@@ -35,10 +35,11 @@ List* listCreate(void) {
 int listDestroy(List* list) {
     Node* currentNode = NULL;
     if (list == NULL) {
-        return 1;
+        return ERROR;
     }
     if (list->head == NULL) {
-        return 0;
+        free(list);
+        return SUCCESS;
     }
     currentNode = list->head;
     while (currentNode != NULL) {
@@ -47,12 +48,12 @@ int listDestroy(List* list) {
         nodeDestroy(nodeToDestroy);
     }
     free(list);
-    return 0;
+    return SUCCESS;
 }
 
 int listInsert(List* list, Node* node) {
     if (list == NULL || node == NULL) {
-        return 1;
+        return ERROR;
     }
     if (list->head == NULL) {
         list->head = node;
@@ -61,14 +62,14 @@ int listInsert(List* list, Node* node) {
         list->tail->next = node;
         list->tail = list->tail->next;
     }
-    return 0;
+    return SUCCESS;
 }
 
 int listRemove(List* list, int index) {
     Node* currentNode = NULL;
     int count;
     if (list == NULL || list->head == NULL) {
-        return 1;
+        return ERROR;
     }
     count = 0;
     currentNode = list->head;
@@ -84,10 +85,10 @@ int listRemove(List* list, int index) {
                 } else {
                     list->head = currentNode->next;
                 }
-                if (nodeDestroy(currentNode) != 0) {
-                    return 1;
+                if (nodeDestroy(currentNode) != SUCCESS) {
+                    return ERROR;
                 }
-                return 0;
+                return SUCCESS;
             } else if (currentNode->next != NULL) {
                 Node* nodeToRemove = currentNode->next;
                 if (nodeToRemove == list->tail) {
@@ -96,14 +97,14 @@ int listRemove(List* list, int index) {
                 } else {
                     currentNode->next = nodeToRemove->next;
                 }
-                if (nodeDestroy(nodeToRemove) != 0) {
-                    return 1;
+                if (nodeDestroy(nodeToRemove) != SUCCESS) {
+                    return ERROR;
                 }
-                return 0;
+                return SUCCESS;
             }
         }
     }
-    return 0;
+    return SUCCESS;
 }
 
 Node* listPeek(List* list, int index) {

@@ -5,6 +5,8 @@
 #ifndef LIST_H
 #define LIST_H
 
+#define ERROR 1
+#define SUCCESS 0
 typedef struct Node {
     char* data;
     struct Node* next;

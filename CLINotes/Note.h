@@ -6,7 +6,9 @@
 #ifndef NOTE_H
 #define NOTE_H
 
-void noteAdd(List*);
+#define ERROR 1
+#define SUCCESS 0
+int noteAdd(List*);
 int notesView(List*);
 int noteRemove(List*);
 
